@@ -37,6 +37,7 @@ COMPAT_CLASSES = "pl-4 pr-0 py-0 shadow-none"
 # Sticky date row for long habit list
 STICKY_STYLES = "position: sticky; top: 0; z-index: 1; background-color: #121212;"
 HEADER_STYLES = "font-size: 85%; font-weight: 500; color: #9e9e9e"
+CARD_HEADER_STYLES = "font-size: 85%; font-weight: 500; color: #6796cf"
 
 
 def grid(columns, rows):
@@ -89,12 +90,12 @@ def habit_list_ui(days: list[datetime.date], active_habits: List[Habit]):
 
     with ui.column().classes("gap-1.5"):
         # Date Headers
-        with grid(columns, 2).classes(COMPAT_CLASSES).style(STICKY_STYLES) as g:
-            g.props('aria-hidden="true"')
-            for it in (week_headers(days), day_headers(days)):
-                ui.label("").classes(LEFT_CLASSES).style(HEADER_STYLES)
-                for label in it:
-                    ui.label(label).classes(RIGHT_CLASSES).style(HEADER_STYLES)
+        # with grid(columns, 2).classes(COMPAT_CLASSES).style(STICKY_STYLES) as g:
+        #     g.props('aria-hidden="true"')
+        #     for it in (week_headers(days), day_headers(days)):
+        #         ui.label("").classes(LEFT_CLASSES).style(HEADER_STYLES)
+        #         for label in it:
+        #             ui.label(label).classes(RIGHT_CLASSES).style(HEADER_STYLES)
 
         # Habit Rows
         groups = habits_by_tags(active_habits)
@@ -103,7 +104,16 @@ def habit_list_ui(days: list[datetime.date], active_habits: List[Habit]):
                 continue
 
             for habit in habit_list:
-                with ui.card().classes(COMPAT_CLASSES):
+                with ui.card().classes(COMPAT_CLASSES + " gap-0 pt-4 pr-2 rounded-xl"):
+                    with grid(columns, 2).classes("pl-0 pr-0 py-0 shadow-none") as g:
+                        g.props('aria-hidden="true"')
+                        for it in (week_headers(days), day_headers(days)):
+                            ui.label("").classes(LEFT_CLASSES).style(CARD_HEADER_STYLES)
+                            items = list(it) 
+                            for i, label in enumerate(items):
+                                # 如果是最後一個項目，則使用 CARD_HEADER_STYLES，否則使用 HEADER_STYLES
+                                style = CARD_HEADER_STYLES if i == len(items) - 1 else HEADER_STYLES
+                                ui.label(label).classes(RIGHT_CLASSES).style(style)
                     with grid(columns, 1):
                         habit_row(habit, tag, days)
 
